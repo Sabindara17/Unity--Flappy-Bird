@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     public TMP_Text Gameover;
     public TMP_Text Scores;
 
+   
+
   
  
 

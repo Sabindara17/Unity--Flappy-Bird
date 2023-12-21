@@ -1,31 +1,42 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms.Impl;
 
 public class PlayerController : MonoBehaviour
 {
-    //public Rigidbody2D rb;
+    public Rigidbody2D rb;
     public GameObject player;
    
     public float gravity = 2.5f;
-    public float jump = 5f;
+    public float jump = 7f;
     public float speed = 6f;
     public bool canplay;
+    float rotation;
 
     //Sound
     public AudioSource Jumpaudio;    
     public AudioSource overAudio;
     public AudioSource scoreAudio;
-    
-   
+
+    //highscore
+     
+     int highscore;
+    public TMP_Text highscoreText;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
         player.GetComponent<Rigidbody2D>().gravityScale = 0;
         player.GetComponent<Animator>().enabled = false;
 
+
+        highscore = PlayerPrefs.GetInt("HighScore");
+        highscoreText.GetComponent<TMP_Text>().text =$"HighScore = {highscore.ToString()}";
         
     }
 
@@ -34,6 +45,8 @@ public class PlayerController : MonoBehaviour
     {
         if (canplay)
         {
+
+           
             player.GetComponent<Animator>().enabled = true;
 
             if (Input.GetKeyDown(KeyCode.Space) || (Input.touchCount >0) || (Input.GetMouseButtonDown(0)))
@@ -45,8 +58,20 @@ public class PlayerController : MonoBehaviour
                 
                 Jumpaudio.Play();
             }
+            if (rb.velocity.y > 0 && rotation < 30)
+            {
+                rotation += 4;
+                transform.eulerAngles = new Vector3(0, 0, rotation);
+            }
+            if (rb.velocity.y < 0 && rotation > -30)
+            {
+                rotation -= 4;
+                transform.eulerAngles = new Vector3(0, 0, rotation);
+            }
 
-            
+
+
+
         }
 
         if ((player.transform.position.y > 5.6f) || (player.transform.position.y < -5.41f))
@@ -77,6 +102,8 @@ public class PlayerController : MonoBehaviour
             player.GetComponent<Animator>().enabled = false;
 
             overAudio.Play();
+
+          
             
         }
         
@@ -90,7 +117,16 @@ public class PlayerController : MonoBehaviour
 
             scoreAudio.Play();
             
+
         }
+
+        if(FindObjectOfType<GameManager>().Score > highscore)
+        {
+            highscore = FindObjectOfType<GameManager>().Score;
+            highscoreText.GetComponent<TMP_Text>().text = $"HighScore : {highscore}";
+            PlayerPrefs.SetInt("HighScore", highscore);
+        }
+
 
         
     }
